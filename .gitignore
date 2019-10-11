@@ -1,3 +1,5 @@
+.idea
+
 /public/build/fonts/glyphicons-*
 /public/build/images/glyphicons-*
 
@@ -28,3 +30,4 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
