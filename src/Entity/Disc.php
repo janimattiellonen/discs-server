@@ -12,13 +12,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Disc implements \JsonSerializable
 {
     /**
-     * @var int
+     * @var string
      *
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", nullable=false, length=36)
      */
-    private $id;
+    protected $id;
 
     /**
      * @var double
@@ -209,8 +208,27 @@ class Disc implements \JsonSerializable
      */
     private $donationDescription;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $createdAt;
 
-    public function getId(): ?int
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
+    public function __construct(string $id)
+    {
+        $this->id = $id;
+    }
+
+
+    public function getId(): string
     {
         return $this->id;
     }
@@ -405,12 +423,12 @@ class Disc implements \JsonSerializable
         $this->soldFor = $soldFor;
     }
 
-    public function isBroken(): string
+    public function isBroken(): bool
     {
         return $this->isBroken;
     }
 
-    public function setIsBroken(string $isBroken): void
+    public function setIsBroken(bool $isBroken): void
     {
         $this->isBroken = $isBroken;
     }
@@ -487,6 +505,32 @@ class Disc implements \JsonSerializable
     public function setDonationDescription(string $donationDescription = null): void
     {
         $this->donationDescription = $donationDescription;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt(\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 
     public function jsonSerialize()

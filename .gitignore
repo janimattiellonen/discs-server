@@ -3,6 +3,8 @@
 /public/build/fonts/glyphicons-*
 /public/build/images/glyphicons-*
 
+/public/uploads/images/discs
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.*.local

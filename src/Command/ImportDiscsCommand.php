@@ -18,6 +18,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use Ramsey\Uuid\Uuid;
+
 class ImportDiscsCommand extends Command
 {
     protected static $defaultName = 'app:import-discs';
@@ -49,6 +51,7 @@ class ImportDiscsCommand extends Command
             ->setDescription('Creates users and stores them in the database')
             ->addArgument('source', InputArgument::REQUIRED, 'Full path to the source json file containing discs')
             ->addArgument('imageDir', InputArgument::REQUIRED, 'Full path to the image directory containing all images')
+            ->addArgument('mapFile', InputArgument::REQUIRED, 'Full path to the file that contains mappings between filename and image hash')
         ;
     }
 
@@ -68,6 +71,9 @@ class ImportDiscsCommand extends Command
     {
         $source = $input->getArgument('source');
         $imageDir = $input->getArgument('imageDir');
+        $mapFile = $input->getArgument('mapFile');
+
+        $mapFileContent = json_decode(file_get_contents($mapFile), true);
 
         if (!file_exists($source)) {
             $output->writeln(sprintf('Source file "%s" not found', $source));
@@ -82,7 +88,9 @@ class ImportDiscsCommand extends Command
         $discs = json_decode(file_get_contents($source), true);
 
         foreach ($discs as $discData) {
-            $disc = new Disc();
+            $uuid4 = Uuid::uuid4();
+
+            $disc = new Disc($uuid4->toString());
             $disc->setName($discData['name']);
             $disc->setType($discData['type']);
             $disc->setManufacturer($discData['manufacturer']);
@@ -107,9 +115,14 @@ class ImportDiscsCommand extends Command
             $disc->setDonationDescription($discData['Donation description'] ?? null);
             $disc->setPrice($discData['price'] ?? null);
             $disc->setPriceStatus($discData['price_status'] ?? null);
+            $disc->setCreatedAt(new \DateTime($discData['_created']));
+            $disc->setUpdatedAt(new \DateTime($discData['_changed']));
 
-
-
+            if (isset($discData['image']) && count($discData['image'])) {
+                if (isset($mapFileContent[$discData['image'][0]])) {
+                    $disc->setImage($mapFileContent[$discData['image'][0]]);
+                }
+            }
 
             $this->entityManager->persist($disc);
             $this->entityManager->flush();
