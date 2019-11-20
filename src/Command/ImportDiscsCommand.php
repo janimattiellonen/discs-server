@@ -9,6 +9,8 @@
 namespace App\Command;
 
 use App\Entity\Disc;
+use App\Entity\Manufacturer;
+use App\Entity\Type;
 use App\Repository\DiscRepository;
 use App\Utils\Validator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,15 +87,62 @@ class ImportDiscsCommand extends Command
             return;
         }
 
-        $discs = json_decode(file_get_contents($source), true);
+        $discs = json_decode(str_replace('Latitude64', 'Latitude 64', file_get_contents($source)), true);
+
+        $manufacturers = [];
+        array_map(
+            function ($disc) use(&$manufacturers) {
+                $key = str_replace(' ', '-', strtolower($disc['manufacturer']));
+
+                $manufacturers[$disc['manufacturer']] = $key;
+            },
+            $discs
+        );
+
+        $types = [];
+        array_map(
+            function ($disc) use(&$types) {
+                $key = str_replace(' ', '-', strtolower($disc['type']));
+
+                $types[$disc['type']] = $key;
+            },
+            $discs
+        );
+
+        $savedManufacturers = [];
+        $savedTypes = [];
+
+        foreach ($manufacturers as $name => $key) {
+            $manufacturer = new Manufacturer();
+            $manufacturer->setId($key);
+            $manufacturer->setName($name);
+            $manufacturer->setCreatedAt(new \DateTime());
+            $this->entityManager->persist($manufacturer);
+            $this->entityManager->flush();
+            $savedManufacturers[$name] = $manufacturer;
+        }
+
+        foreach ($types as $name => $key) {
+            $type = new Type();
+            $type->setId($key);
+            $type->setName($name);
+            $type->setCreatedAt(new \DateTime());
+            $this->entityManager->persist($type);
+            $this->entityManager->flush();
+            $savedTypes[$name] = $type;
+        }
+
+
+        //print_r($manufacturers);
+        //print_r($types);die;
 
         foreach ($discs as $discData) {
             $uuid4 = Uuid::uuid4();
 
             $disc = new Disc($uuid4->toString());
             $disc->setName($discData['name']);
-            $disc->setType($discData['type']);
-            $disc->setManufacturer($discData['manufacturer']);
+            $disc->setType($savedTypes[$discData['type']]);
+            $disc->setManufacturer($savedManufacturers[$discData['manufacturer']]);
             $disc->setMaterial($discData['material'] ?? null);
             $disc->setColor($discData['color']);
             $disc->setSpeed($discData['speed']);

@@ -34,9 +34,10 @@ class Disc implements \JsonSerializable
     private $priceStatus;
 
     /**
-     * @var string
+     * @var Type
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\Entity\Type")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $type;
 
@@ -48,9 +49,10 @@ class Disc implements \JsonSerializable
     private $name;
 
     /**
-     * @var string
+     * @var Manufacturer
      *
-     * @ORM\Column(type="string")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Manufacturer")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $manufacturer;
 
@@ -253,15 +255,22 @@ class Disc implements \JsonSerializable
         $this->priceStatus = $priceStatus;
     }
 
-    public function getType(): string
+    /**
+     * @return Type
+     */
+    public function getType(): Type
     {
         return $this->type;
     }
 
-    public function setType(string $type): void
+    /**
+     * @param Type $type
+     */
+    public function setType(Type $type): void
     {
         $this->type = $type;
     }
+
 
     public function getName(): string
     {
@@ -273,12 +282,18 @@ class Disc implements \JsonSerializable
         $this->name = $name;
     }
 
-    public function getManufacturer(): string
+    /**
+     * @return Manufacturer
+     */
+    public function getManufacturer(): Manufacturer
     {
         return $this->manufacturer;
     }
 
-    public function setManufacturer(string $manufacturer): void
+    /**
+     * @param Manufacturer $manufacturer
+     */
+    public function setManufacturer(Manufacturer $manufacturer): void
     {
         $this->manufacturer = $manufacturer;
     }
