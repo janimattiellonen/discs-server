@@ -2,14 +2,14 @@
 
 namespace App\Repository;
 
-use App\Entity\Disc;
+use App\Entity\Manufacturer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class DiscRepository extends ServiceEntityRepository
+class ManufacturerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Disc::class);
+        parent::__construct($registry, Manufacturer::class);
     }
 }

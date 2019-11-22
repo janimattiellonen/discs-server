@@ -62,7 +62,7 @@ class Manufacturer
     {
         $this->id = $id;
     }
-    
+
     /**
      * @return string
      */
