@@ -15,15 +15,37 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Asset\UrlPackage;
+use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 
 class DiscsController extends AbstractFOSRestController
 {
     /**
      * @Rest\Get("/discs", name="get_discs")
      */
-    public function getDiscs(DiscRepository $discs)
+    public function getDiscs(Request $request, DiscRepository $discs)
     {
-        return $this->handleView($this->view($discs->findAll())->setHeader('Access-Control-Allow-Origin', '*'));
+        $localPackage = new UrlPackage(
+            sprintf('%s/uploads/images', $request->getSchemeAndHttpHost() ),
+            new EmptyVersionStrategy()
+        );
+
+        $discs = array_map(
+            function ($disc) use ($localPackage) {
+                if($disc->getImage()) {
+                    $disc->setImage($localPackage->getUrl($disc->getImage()));
+                }
+
+                return $disc;
+            },
+            $discs->findAll()
+        );
+
+        return $this->handleView($this->view($discs)
+            ->setHeaders([
+                'Access-Control-Allow-Origin' => 'localhost',
+                'Access-Control-Allow-Credentials' => 'true',
+            ]));
     }
 
     /**

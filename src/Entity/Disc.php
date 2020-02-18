@@ -378,7 +378,7 @@ class Disc implements \JsonSerializable
         $this->weight = $weight;
     }
 
-    public function getImage(): string
+    public function getImage(): ?string
     {
         return $this->image;
     }

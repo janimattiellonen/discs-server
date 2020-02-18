@@ -50,7 +50,7 @@ class ImportDiscsCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Creates users and stores them in the database')
+            ->setDescription('Import discs')
             ->addArgument('source', InputArgument::REQUIRED, 'Full path to the source json file containing discs')
             ->addArgument('imageDir', InputArgument::REQUIRED, 'Full path to the image directory containing all images')
             ->addArgument('mapFile', InputArgument::REQUIRED, 'Full path to the file that contains mappings between filename and image hash')
@@ -169,7 +169,7 @@ class ImportDiscsCommand extends Command
 
             if (isset($discData['image']) && count($discData['image'])) {
                 if (isset($mapFileContent[$discData['image'][0]])) {
-                    $disc->setImage($mapFileContent[$discData['image'][0]]);
+                    $disc->setImage($mapFileContent[$discData['image'][0]]['internalPath']);
                 }
             }
 
