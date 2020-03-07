@@ -18,12 +18,31 @@ use Ramsey\Uuid\Uuid;
 
 class DiscsController extends AbstractFOSRestController
 {
+
+    /**
+     * @Rest\Get("/foos", name="get_foos")
+     */
+    public function getFoos(DiscRepository $discs)
+    {
+        return $this->handleView($this->view(['foo' => 'bar'])
+            ->setHeaders(
+                [
+                    'Access-Control-Allow-Origin' => '*',
+                    'Access-Control-Allow-Credentials' => 'true'
+                ]));
+    }
+
     /**
      * @Rest\Get("/discs", name="get_discs")
      */
     public function getDiscs(DiscRepository $discs)
     {
-        return $this->handleView($this->view($discs->findAll())->setHeader('Access-Control-Allow-Origin', '*'));
+        return $this->handleView($this->view($discs->findAll())
+            ->setHeaders(
+                [
+                    'Access-Control-Allow-Origin' => '*',
+                    'Access-Control-Allow-Credentials' => 'true'
+                ]));
     }
 
     /**
@@ -66,6 +85,7 @@ class DiscsController extends AbstractFOSRestController
         $em->persist($disc);
         $em->flush();
 
-        return $this->handleView($this->view(['ok' => true, 'data' => $request->request->all()])->setHeader('Access-Control-Allow-Origin', '*'));
+        return $this->handleView($this->view(['ok' => true, 'data' => $request->request->all()])
+            ->setHeaders(['Access-Control-Allow-Origin' =>  '*', 'Access-Control-Allow-Credentials' => 'true']));
     }
 }
